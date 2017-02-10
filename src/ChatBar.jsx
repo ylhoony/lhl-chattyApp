@@ -11,7 +11,7 @@ class ChatBar extends Component {
   }
 
   handleInput(e) {
-    console.log('hooorah!!');
+    // console.log('hooorah!!');
 
     this.props.addMessage(e);
     // if (e.key === 'Enter') {

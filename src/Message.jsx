@@ -8,7 +8,7 @@ class Message extends Component {
 
   render() {
     console.log("Rendering <Message />");
-    console.log("CURRENT MESSAGE: " + this.props.message);
+    // console.log("CURRENT MESSAGE: " + this.props.message);
     return (
       <div>
         <div className="message">
