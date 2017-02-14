@@ -7,13 +7,13 @@ class Message extends Component {
   }
 
   render() {
-    console.log("Rendering <Message />");
-    // console.log("CURRENT MESSAGE: " + this.props.message);
+    const { username, content } = this.props.message;
+
     return (
       <div>
         <div className="message">
-          <span className="message-username">{this.props.message.username}</span>
-          <span className="message-content">{this.props.message.content}</span>
+          <span className="message-username">{ username }</span>
+          <span className="message-content">{ content }</span>
         </div>
       </div>
     )
