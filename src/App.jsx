@@ -10,34 +10,42 @@ class App extends Component {
       messages: [],
       notification: '',
       userCount: 0,
-      userColor: #000
+      userColor: '#000'
     }
     this.changeUsername = this.changeUsername.bind(this);
     this.addMessage = this.addMessage.bind(this);
   }
 
   changeUsername (e) {
+    let newName = e.target.value;
+    const prevUsername = this.state.currentUser.name;
+    
     if (e.key === 'Enter') {
-      const prevUsername = this.state.currentUser.name;
-      console.log(prevUsername);
-
-      let notice = {
-        type: 'postNotification',
-        notification: prevUsername + ' changed username to ' + e.target.value
+      if (newName.length === 0) {
+        newName = prevUsername;
+      } else {
+        let notice = {
+          type: 'postNotification',
+          notification: `${prevUsername} changed username to ${newName}`
+        }
+        this.socket.send(JSON.stringify(notice));
       }
-      this.socket.send(JSON.stringify(notice));
+
       this.setState({
-        currentUser: {name: e.target.value}
+        currentUser: { name: newName }
       });
     }
   }
 
   addMessage(e) {
+    const content = e.target.value;
+    if (content.length === 0) return;
+
     if (e.key === 'Enter') {
       let message = {
         type: 'postMessage',
         username: this.state.currentUser.name,
-        content: e.target.value
+        content
       }
 
       this.socket.send(JSON.stringify(message));
@@ -45,36 +53,33 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log("componentDidMount <App />");
-
+    // consider putting urls in a variable, it may be used elsewhere also.
     this.socket = new WebSocket("ws://localhost:4000");
-
     this.socket.onopen = (event) => {
       console.log("Connected to server");
     };
 
     this.socket.onmessage = (event) => {
-      let broadcastmessage = JSON.parse(event.data);
+      const broadcastmessage = JSON.parse(event.data);
+      const { type, notification, userCount } = broadcastmessage;
 
-      switch(broadcastmessage.type) {
+      switch(type) {
         case "incomingMessage":
-          let messages = this.state.messages.concat([broadcastmessage]);
+          const messages = this.state.messages.concat([broadcastmessage]);
           // calls the render method in the App component
-          this.setState({ messages: messages });
+          this.setState({ messages });
           break;
         case "incomingNotification":
           // handle incoming notification
-          let notification = broadcastmessage.notification;
-          this.setState({notification: notification});
+          this.setState({ notification });
           break;
           case "userCount":
-          let userCount = broadcastmessage.userCount - 1;
           // calls the render method in the App component
-          this.setState({ userCount: userCount });
+          this.setState({ userCount: (userCount-1) });
           break;
         default:
           // show an error in the console if the message type is unknown
-          throw new Error("Unknown event type " + data.type);
+          throw new Error(`Unknown event type type`);
       }
     }
   }
