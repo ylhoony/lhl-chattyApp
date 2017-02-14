@@ -53,33 +53,33 @@ class App extends Component {
   }
 
   componentDidMount() {
+    // consider putting urls in a variable, it may be used elsewhere also.
     this.socket = new WebSocket("ws://localhost:4000");
     this.socket.onopen = (event) => {
       console.log("Connected to server");
     };
 
     this.socket.onmessage = (event) => {
-      let broadcastmessage = JSON.parse(event.data);
+      const broadcastmessage = JSON.parse(event.data);
+      const { type, notification, userCount } = broadcastmessage;
 
-      switch(broadcastmessage.type) {
+      switch(type) {
         case "incomingMessage":
-          let messages = this.state.messages.concat([broadcastmessage]);
+          const messages = this.state.messages.concat([broadcastmessage]);
           // calls the render method in the App component
-          this.setState({ messages: messages });
+          this.setState({ messages });
           break;
         case "incomingNotification":
           // handle incoming notification
-          let notification = broadcastmessage.notification;
-          this.setState({notification: notification});
+          this.setState({ notification });
           break;
           case "userCount":
-          let userCount = broadcastmessage.userCount - 1;
           // calls the render method in the App component
-          this.setState({ userCount: userCount });
+          this.setState({ userCount: (userCount-1) });
           break;
         default:
           // show an error in the console if the message type is unknown
-          throw new Error("Unknown event type " + data.type);
+          throw new Error(`Unknown event type type`);
       }
     }
   }
