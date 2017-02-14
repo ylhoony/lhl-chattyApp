@@ -38,11 +38,14 @@ class App extends Component {
   }
 
   addMessage(e) {
+    const content = e.target.value;
+    if (content.length === 0) return;
+
     if (e.key === 'Enter') {
       let message = {
         type: 'postMessage',
         username: this.state.currentUser.name,
-        content: e.target.value
+        content
       }
 
       this.socket.send(JSON.stringify(message));
@@ -50,10 +53,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log("componentDidMount <App />");
-
     this.socket = new WebSocket("ws://localhost:4000");
-
     this.socket.onopen = (event) => {
       console.log("Connected to server");
     };
