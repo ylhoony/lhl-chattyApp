@@ -10,24 +10,29 @@ class App extends Component {
       messages: [],
       notification: '',
       userCount: 0,
-      userColor: #000
+      userColor: '#000'
     }
     this.changeUsername = this.changeUsername.bind(this);
     this.addMessage = this.addMessage.bind(this);
   }
 
   changeUsername (e) {
+    let newName = e.target.value;
+    const prevUsername = this.state.currentUser.name;
+    
     if (e.key === 'Enter') {
-      const prevUsername = this.state.currentUser.name;
-      console.log(prevUsername);
-
-      let notice = {
-        type: 'postNotification',
-        notification: prevUsername + ' changed username to ' + e.target.value
+      if (newName.length === 0) {
+        newName = prevUsername;
+      } else {
+        let notice = {
+          type: 'postNotification',
+          notification: `${prevUsername} changed username to ${newName}`
+        }
+        this.socket.send(JSON.stringify(notice));
       }
-      this.socket.send(JSON.stringify(notice));
+
       this.setState({
-        currentUser: {name: e.target.value}
+        currentUser: { name: newName }
       });
     }
   }
